@@ -36,7 +36,7 @@ runs:
 
     - name: Update database
       run: |
-        export DATABASE_CONNECTION_STRING={{ inputs.database-connection-string }}
-        cd {{ inputs.schema-manager-directory }}
-        dotnet ef database update --context {{ inputs.database-context }} || exit 1
+        export DATABASE_CONNECTION_STRING=${{ inputs.database-connection-string }}
+        cd ${{ inputs.schema-manager-directory }}
+        dotnet ef database update --context ${{ inputs.database-context }} || exit 1
       shell: bash
