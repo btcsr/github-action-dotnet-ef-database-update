@@ -14,7 +14,7 @@ inputs:
   schema-manager-directory:
     description: 'Directory for migrations project'
     required: true
-    default: 'PostgresSchemaManager'
+    default: 'src/Utilities/PostgresSchemaManager'
     
 runs:
   using: "composite"
