@@ -1,0 +1,42 @@
+name: 'Migrate EF Database'
+description: 'This runs a database migration from our EF Schema manager'
+
+inputs:
+  database-connection-string: 
+    description: 'database connection string, code must use it as DATABASE_CONNECTION_STRING environment variable'
+    required: true
+  database-context:
+    description: 'name of context file for specified database'
+    required: true
+  nuget-read-token:
+    description: 'Read-only nuget token, called PACKAGE_READ_GITHUB_TOKEN in Arundo'
+    required: true
+  schema-manager-directory:
+    description: 'Directory for migrations project'
+    required: true
+    default: 'PostgresSchemaManager'
+    
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@master
+
+    - name: Install .NET Core 5.0 latest
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+        source-url: https://nuget.pkg.github.com/arundo/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ inputs.nuget-read-token }}
+
+    - name: Install EF Core CLI
+      run: dotnet tool install dotnet-ef --global
+      shell: bash
+
+    - name: Update database
+      run: |
+        export DATABASE_CONNECTION_STRING={{ inputs.database-connection-string }}
+        cd {{ inputs.schema-manager-directory }}
+        dotnet ef database update --context {{ inputs.database-context }} || exit 1
+      shell: bash
